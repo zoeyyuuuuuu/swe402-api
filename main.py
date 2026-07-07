@@ -129,12 +129,16 @@ def run_prediction(job: JobInput) -> dict:
     }
 
     return {
-        "threat_level":   threat,
-        "confidence":     round(float(pred_proba.max()), 4),
-        "probabilities":  proba_dict,
-        "recommendation": recommendations.get(threat, {}),
-        "input":          job.dict()
-    }
+    "threat_level":      threat,
+    "confidence":        round(float(pred_proba.max()), 4),
+    "confidence_pct":    f"{round(float(pred_proba.max()) * 100, 1)}%",
+    "probabilities": {
+        le_threat.inverse_transform([i])[0]: f"{round(float(p) * 100, 1)}%"
+        for i, p in enumerate(pred_proba)
+    },
+    "recommendation":    recommendations.get(threat, {}),
+    "input":             job.dict()
+}
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
